@@ -6,7 +6,7 @@ class CreateComments < ActiveRecord::Migration[6.0]
       t.references :video, null: false, foreign_key: true
       t.integer :likes
 
-      t.timestamps
+      t.datetime :created_at
     end
   end
 end

@@ -5,7 +5,7 @@ class CreateVideos < ActiveRecord::Migration[6.0]
       t.string :url_path
       t.references :user, null: false, foreign_key: true
 
-      t.timestamps
+      t.datetime :created_at
     end
   end
 end

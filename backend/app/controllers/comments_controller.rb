@@ -1,11 +1,16 @@
 class CommentsController < ApplicationController
 
     def index
-        comments = Comment.all
-        render json: comments
+        video = Video.find_by(id: params[:video_id])
+        if video
+            render json: video.comments
+        else
+            render json: { message: 'Video not found' }
+        end
     end
 
     def show
+        video = Video.find_by(idL params[:video_id])
         comment = Comment.find_by(id: params[:id])
         if comment
             render json: comment

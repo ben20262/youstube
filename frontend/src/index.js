@@ -2,6 +2,7 @@ const BACKEND_URL = 'http://localhost:3000'
 
 document.addEventListener('DOMContentLoaded', () => {
 	Video.getVideos()
+	User.getUsers()
 })
 
 class Video {
@@ -39,13 +40,32 @@ class Video {
 		vidUser.textContent = `Uploaded by ${this.user.username} on ${this.uploaded}`
 
 		let commentUl = document.createElement('ul')
+		let commentButton = document.createElement('button')
+		commentButton.textContent = 'More Comments'
 
 		vidDiv.appendChild(vidHead)
 		vidDiv.appendChild(vidUser)
 		vidDiv.appendChild(vidURL)
 		vidDiv.appendChild(commentUl)
+		vidDiv.appendChild(commentButton)
 		diveo.appendChild(vidDiv)
 		Comment.getComments(this.id)
+		
+		commentButton.addEventListener('click', (event) => {
+			event.preventDefault()
+			if (commentButton.textContent === 'More Comments') {
+				commentUl.childNodes.forEach(comment => {
+					comment.style.display = 'block'
+				})
+				commentButton.textContent = 'Less Comments'
+			} else {
+				commentUl.childNodes.forEach((comment, index) => {
+					index > 0 ? comment.style.display = 'none' : false
+
+				})
+				commentButton.textContent = 'More Comments'
+			}
+		})
 	}
 
 }
@@ -67,6 +87,15 @@ class Comment {
 		.then(comments => {
 			comments.forEach(comment => new this(comment))
 		})
+		.then(() => {
+			let commentLis = document.querySelectorAll(`div.video${video_id} ul li`)
+			commentLis.forEach((li, index) => {
+				if (index > 0) {
+					li.style.display = 'none'
+				}
+			})
+		})
+
 	}
 
 	makeComment() {
@@ -74,6 +103,36 @@ class Comment {
 		let commentLi = document.createElement('li')
 		commentLi.textContent = `${this.user.username}: ${this.content}`
 		commentUl.prepend(commentLi)
+	}
+
+}
+
+class User {
+
+	static getUsers() {
+		let userSelect = document.querySelector('div.header div.login select.users')
+		fetch(`${BACKEND_URL}/users`)
+		.then(resp => resp.json())
+		.then(users => {
+			users.forEach(user => {
+				let userOption = document.createElement('option')
+				userOption.value = user.id
+				userOption.textContent = user.username
+				userSelect.appendChild(userOption)
+			})
+		})
+		.then(() => {
+			userSelect.addEventListener('change', (event) => {
+				event.preventDefault()
+				let userH4 = document.querySelector('h4')
+				userH4.textContent = `User: ${userSelect.selectedOptions[0].textContent}`
+				userH4.value = userSelect.selectedOptions[0].value
+				userH4.className = 'visible'
+				document.querySelector('div.login').className = 'hidden'
+			})
+		})
+
+		
 	}
 
 }

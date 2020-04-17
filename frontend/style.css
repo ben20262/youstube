@@ -1,3 +1,12 @@
-div.header h1 {
+div.header header h1 {
 	color: red
+}
+
+div.header {
+	background-color: rgb(199, 199, 199);
+	padding: 5px
+}
+
+ul {
+	list-style: none
 }

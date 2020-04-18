@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	Video.getVideos()
 	User.getUsers()
 	User.addUser()
+	Video.addVideo()
 })
 
 class Video {
@@ -69,9 +70,48 @@ class Video {
 		})
 	}
 
+	static addVideo() {
+		let videoButton = document.querySelector('div.videos button')
+		videoButton.addEventListener('click', (event) => {
+			event.preventDefault()
+			if (videoButton.textContent === 'Add Video')
+			{	document.querySelector('div.videos form').className = 'visible'
+				videoButton.textContent = 'Cancel'
+			}	else {
+				document.querySelector('div.videos form').className = 'hidden'
+				videoButton.textContent = 'Add Video'
+			}
+		})
+
+		let videoForm = document.querySelector('div.videos form') // require logging in
+		videoForm.addEventListener('submit', event => {
+			event.preventDefault()
+			let videoArray = videoForm.querySelectorAll('input')
+			let userId = document.querySelector('div.header h4').id
+			fetch(`${BACKEND_URL}/videos`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Accept': 'application/json'
+				},
+				body: JSON.stringify({
+					title: videoArray[0].value,
+					url_path: videoArray[1].value,
+					user_id: userId
+				})
+			})
+			.then(resp => resp.json())
+			.then(video => {
+				new this(video)
+				videoForm.className = 'hidden'
+				videoButton.textContent = 'Add Video'
+			})
+		})
+	}
+
 }
 
-class Comment {
+class Comment { // make comment form
 
 	constructor(comment) {
 		this.id = comment.id
@@ -127,7 +167,7 @@ class User {
 				event.preventDefault()
 				let userH4 = document.querySelector('h4')
 				userH4.textContent = `User: ${userSelect.selectedOptions[0].textContent}`
-				userH4.value = userSelect.selectedOptions[0].value
+				userH4.id = userSelect.selectedOptions[0].value
 				userH4.className = 'visible'
 				document.querySelector('div.login').className = 'hidden'
 			})
@@ -146,7 +186,7 @@ class User {
 					'Accept': 'application/json'
 				},
 				body: JSON.stringify({
-					username: `${userInput.value}`
+					username: userInput.value
 				})
 			})
 			.then(resp => resp.json())

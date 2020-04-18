@@ -3,6 +3,7 @@ const BACKEND_URL = 'http://localhost:3000'
 document.addEventListener('DOMContentLoaded', () => {
 	Video.getVideos()
 	User.getUsers()
+	User.addUser()
 })
 
 class Video {
@@ -55,12 +56,12 @@ class Video {
 			event.preventDefault()
 			if (commentButton.textContent === 'More Comments') {
 				commentUl.childNodes.forEach(comment => {
-					comment.style.display = 'block'
+					comment.className = 'visible'
 				})
-				commentButton.textContent = 'Less Comments'
+				commentButton.textContent = 'Fewer Comments'
 			} else {
 				commentUl.childNodes.forEach((comment, index) => {
-					index > 0 ? comment.style.display = 'none' : false
+					index > 0 ? comment.className = 'hidden' : false
 
 				})
 				commentButton.textContent = 'More Comments'
@@ -91,7 +92,7 @@ class Comment {
 			let commentLis = document.querySelectorAll(`div.video${video_id} ul li`)
 			commentLis.forEach((li, index) => {
 				if (index > 0) {
-					li.style.display = 'none'
+					li.className = 'hidden'
 				}
 			})
 		})
@@ -130,9 +131,34 @@ class User {
 				userH4.className = 'visible'
 				document.querySelector('div.login').className = 'hidden'
 			})
+		})		
+	}
+
+	static addUser() {
+		let userForm = document.querySelector('div.login form')
+		userForm.addEventListener('submit', (event) => {
+			event.preventDefault()
+			let userInput = userForm.firstElementChild
+			fetch(`${BACKEND_URL}/users`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Accept': 'application/json'
+				},
+				body: JSON.stringify({
+					username: `${userInput.value}`
+				})
+			})
+			.then(resp => resp.json())
+			.then(user => {
+				let userH4 = document.querySelector('h4')
+				userH4.textContent = `User: ${user.username}`
+				userH4.value = user.id
+				userH4.className = 'visible'
+				document.querySelector('div.login').className = 'hidden'
+			})
 		})
 
-		
 	}
 
 }

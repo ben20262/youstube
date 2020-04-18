@@ -15,12 +15,12 @@ class VideosController < ApplicationController
     end
 
     def create
-        video = Video.create(params[:video])
+        video = Video.create(title: params[:title], url_path: params[:url_path], user_id: params[:user_id])
 
         if video.valid?
-            render json: video
+            render json: video, include: :user
         else
-            render json: video.error
+            render json: video.errors
         end
     end
 

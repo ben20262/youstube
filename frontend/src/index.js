@@ -135,6 +135,7 @@ class Comment { // make comment form
 					li.className = 'hidden'
 				}
 			})
+			this.addComment(video_id)
 		})
 
 	}
@@ -146,6 +147,51 @@ class Comment { // make comment form
 		commentUl.prepend(commentLi)
 	}
 
+	static addComment(video_id) {
+		let vidDiv = document.querySelector(`div.video${video_id}`)
+		let commentForm = document.createElement('form')
+
+		let commentContent = document.createElement('input')
+		commentContent.type = 'text'
+		commentContent.name = 'content'
+		commentContent.placeholder = 'New Comment'
+		commentForm.appendChild(commentContent)
+
+		let commentSubmit = document.createElement('input')
+		commentSubmit.type = 'submit'
+		commentSubmit.value = 'Comment'
+		commentForm.appendChild(commentSubmit)
+
+		vidDiv.appendChild(commentForm)
+
+		commentForm.addEventListener('submit', (event) => {
+			let user_id = document.querySelector('div.header h4').id
+			event.preventDefault()
+			console.log(user_id)
+			if (user_id === '') {
+				document.querySelector('div.header div.login').style.outline = 'red solid 2px'
+				alert('Please Log In')
+				setTimeout(() => {document.querySelector('div.header div.login').style.outline = 'none'}, 5000)
+			} else if (commentContent.value === '') {
+				commentContent.style.outline = 'red solid 2px'
+				alert('Please Make a Comment')
+				setTimeout(() => {commentContent.style.outline = 'none'}, 5000)
+			} else {
+				fetch(`${BACKEND_URL}/video/${video_id}/comments`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'Accept': 'application/json'
+					},
+					body: JSON.stringify({
+						content: commentContent.value,
+						user_id: user_id,
+						video_id: video_id
+					})
+				})
+			}
+		})
+	}
 }
 
 class User {

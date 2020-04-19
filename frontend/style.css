@@ -14,3 +14,7 @@ ul {
 .hidden {
 	display: none
 }
+
+.highlight {
+	outline: red solid 2px
+}

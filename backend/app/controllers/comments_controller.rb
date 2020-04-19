@@ -20,9 +20,9 @@ class CommentsController < ApplicationController
     end
 
     def create
-        comment = Comment.create(params)
+        comment = Comment.create(content: params[:content], user_id: params[:user_id], video_id: params[:video_id])
         if comment.valid?
-            render json: comment
+            render json: comment, include: [:user]
         else
             render json: { status: 'failure', message: 'Comment invalid' }
         end

@@ -59,12 +59,14 @@ class Video {
 				commentUl.childNodes.forEach(comment => {
 					comment.className = 'visible'
 				})
+				vidDiv.querySelector('form').className = 'visible'
 				commentButton.textContent = 'Fewer Comments'
 			} else {
 				commentUl.childNodes.forEach((comment, index) => {
 					index > 0 ? comment.className = 'hidden' : false
 
 				})
+				vidDiv.querySelector('form').className = 'hidden'
 				commentButton.textContent = 'More Comments'
 			}
 		})
@@ -150,6 +152,7 @@ class Comment { // make comment form
 	static addComment(video_id) {
 		let vidDiv = document.querySelector(`div.video${video_id}`)
 		let commentForm = document.createElement('form')
+		commentForm.className = 'hidden'
 
 		let commentContent = document.createElement('input')
 		commentContent.type = 'text'
@@ -162,12 +165,11 @@ class Comment { // make comment form
 		commentSubmit.value = 'Comment'
 		commentForm.appendChild(commentSubmit)
 
-		vidDiv.appendChild(commentForm)
+		vidDiv.insertBefore(commentForm, vidDiv.lastChild)
 
 		commentForm.addEventListener('submit', (event) => {
 			let user_id = document.querySelector('div.header h4').id
 			event.preventDefault()
-			console.log(user_id)
 			if (user_id === '') {
 				document.querySelector('div.header div.login').style.outline = 'red solid 2px'
 				alert('Please Log In')
@@ -177,7 +179,7 @@ class Comment { // make comment form
 				alert('Please Make a Comment')
 				setTimeout(() => {commentContent.style.outline = 'none'}, 5000)
 			} else {
-				fetch(`${BACKEND_URL}/video/${video_id}/comments`, {
+				fetch(`${BACKEND_URL}/videos/${video_id}/comments`, {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
@@ -188,6 +190,11 @@ class Comment { // make comment form
 						user_id: user_id,
 						video_id: video_id
 					})
+				})
+				.then(resp => resp.json())
+				.then(comment => {
+					new this(comment)
+					commentContent.value = ''
 				})
 			}
 		})

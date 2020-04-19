@@ -85,11 +85,20 @@ class Video {
 			}
 		})
 
-		let videoForm = document.querySelector('div.videos form') // require logging in
+		let videoForm = document.querySelector('div.videos form')
 		videoForm.addEventListener('submit', event => {
 			event.preventDefault()
 			let videoArray = videoForm.querySelectorAll('input')
-			let userId = document.querySelector('div.header h4').id
+			let user_id = document.querySelector('div.header h4').id
+			if (user_id === '') {
+				document.querySelector('div.header div.login').style.outline = 'red solid 2px'
+				alert('Please Log In')
+				setTimeout(() => {document.querySelector('div.header div.login').style.outline = 'none'}, 5000)
+			} else if (videoArray[0].value === '' || videoArray[1].value === '') {
+				videoForm.style.outline = 'red solid 2px'
+				alert('Please Add Information')
+				setTimeout(() => {videoForm.style.outline = 'none'}, 5000)
+			} else {
 			fetch(`${BACKEND_URL}/videos`, {
 				method: 'POST',
 				headers: {
@@ -99,7 +108,7 @@ class Video {
 				body: JSON.stringify({
 					title: videoArray[0].value,
 					url_path: videoArray[1].value,
-					user_id: userId
+					user_id: user_id
 				})
 			})
 			.then(resp => resp.json())
@@ -108,12 +117,12 @@ class Video {
 				videoForm.className = 'hidden'
 				videoButton.textContent = 'Add Video'
 			})
-		})
+		}})
 	}
 
 }
 
-class Comment { // make comment form
+class Comment {
 
 	constructor(comment) {
 		this.id = comment.id
@@ -246,7 +255,7 @@ class User {
 			.then(user => {
 				let userH4 = document.querySelector('h4')
 				userH4.textContent = `User: ${user.username}`
-				userH4.value = user.id
+				userH4.id = user.id
 				userH4.className = 'visible'
 				document.querySelector('div.login').className = 'hidden'
 			})

@@ -16,7 +16,6 @@ ActiveRecord::Schema.define(version: 2020_04_14_220455) do
     t.text "content"
     t.integer "user_id", null: false
     t.integer "video_id", null: false
-    t.integer "likes"
     t.datetime "created_at"
     t.index ["user_id"], name: "index_comments_on_user_id"
     t.index ["video_id"], name: "index_comments_on_video_id"
